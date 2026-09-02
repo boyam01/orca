@@ -82,6 +82,7 @@ export const ENVIRONMENT_HANDLERS: Record<string, CommandHandler> = {
   }
 }
 
+/** Rejects selectors that would otherwise make local connection metadata appear remotely scoped. */
 function rejectRemoteSelectionFlags(ctx: HandlerContext, command: string): void {
   for (const flag of ['environment', 'pairing-code']) {
     if (ctx.flags.has(flag)) {

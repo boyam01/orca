@@ -41,10 +41,14 @@ vi.mock('child_process', async () => {
 })
 
 import { main } from './index'
-import { pairRuntimeEnvironment, useWorktreeAwarenessEnvironment } from './index-test-harness'
+import {
+  pairRuntimeEnvironment,
+  useWorktreeAwarenessEnvironment as installWorktreeAwarenessEnvironment
+} from './index-test-harness'
 
-describe('orca cli worktree awareness', () => {
-  useWorktreeAwarenessEnvironment({
+/** Registers CLI routing regressions for local metadata commands and remote selectors. */
+function registerWorktreeAwarenessTests(): void {
+  installWorktreeAwarenessEnvironment({
     callMock,
     serveOrcaAppMock,
     getDefaultUserDataPathMock,
@@ -141,4 +145,6 @@ describe('orca cli worktree awareness', () => {
       process.exitCode = priorExitCode
     }
   })
-})
+}
+
+describe('orca cli worktree awareness', registerWorktreeAwarenessTests)

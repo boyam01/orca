@@ -131,10 +131,7 @@ function run(entry, argv, env) {
   }
 }
 
-// Every case must produce identical bytes on both arms. The runtime-dependent
-// ones (status/worktree list) are pointed at an empty user-data dir so the
-// answer is deterministic "not running" rather than whatever the dev machine
-// happens to be doing.
+/** Builds deterministic and seeded-fuzz invocations whose outputs must remain byte-equivalent. */
 function buildCases(isolatedUserData) {
   const isolated = { ORCA_USER_DATA_PATH: isolatedUserData }
   const cases = [

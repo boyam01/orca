@@ -62,7 +62,8 @@ import * as dispatchModule from './dispatch'
 
 const CLI_DIR = __dirname
 
-describe('RuntimeClient module-graph deferral', () => {
+/** Registers checks that local-only CLI paths defer or suppress RuntimeClient construction. */
+function registerRuntimeClientDeferralTests(): void {
   let logSpy: ReturnType<typeof vi.spyOn>
   let errorSpy: ReturnType<typeof vi.spyOn>
 
@@ -257,4 +258,6 @@ describe('RuntimeClient module-graph deferral', () => {
 
     expect(constructorArgsMock).toHaveBeenCalledTimes(1)
   })
-})
+}
+
+describe('RuntimeClient module-graph deferral', registerRuntimeClientDeferralTests)

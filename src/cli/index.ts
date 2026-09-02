@@ -26,6 +26,7 @@ export { buildCurrentWorktreeSelector, normalizeWorktreeSelector } from './selec
 
 const COMMAND_PATHS = COMMAND_SPECS.flatMap((spec) => specPaths(spec))
 
+/** Returns whether a command family must suppress remote selection before selector resolution. */
 function shouldIgnoreRemoteSelection(commandPath: string[]): boolean {
   return (
     commandPath[0] === 'account' ||
