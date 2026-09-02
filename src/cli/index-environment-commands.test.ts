@@ -117,4 +117,28 @@ describe('orca cli worktree awareness', () => {
       }
     }
   )
+
+  it('rejects an unknown --environment on host list before selector resolution', async () => {
+    const priorExitCode = process.exitCode
+    process.exitCode = undefined
+    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+
+    try {
+      await main(['host', 'list', '--environment', 'missing-host', '--json'], '/tmp/repo')
+
+      const response = JSON.parse(String(logSpy.mock.calls.at(-1)?.[0]))
+      expect(response).toMatchObject({
+        ok: false,
+        error: {
+          code: 'invalid_argument'
+        }
+      })
+      expect(response.error.message).toContain('`--environment` does not retarget `orca host list`')
+      expect(runtimeClientConstructorMock).not.toHaveBeenCalled()
+      expect(callMock).not.toHaveBeenCalled()
+      expect(process.exitCode).toBe(1)
+    } finally {
+      process.exitCode = priorExitCode
+    }
+  })
 })

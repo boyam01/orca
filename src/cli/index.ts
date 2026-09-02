@@ -31,6 +31,7 @@ function shouldIgnoreRemoteSelection(commandPath: string[]): boolean {
     commandPath[0] === 'account' ||
     commandPath[0] === 'artifacts' ||
     commandPath[0] === 'environment' ||
+    commandPath[0] === 'host' ||
     commandPath[0] === 'serve' ||
     commandPath[0] === 'agent' ||
     commandPath[0] === 'vm' ||
@@ -145,7 +146,7 @@ export async function main(
     // Why: pass `null` (not `undefined`) when remote selection is suppressed
     // so the RuntimeClient default parameter does not re-activate the
     // ORCA_PAIRING_CODE / ORCA_ENVIRONMENT env-var fallback for commands
-    // that must run locally (environment / serve).
+    // that must run locally (environment / host / serve).
     const suppressed = ignoreRemoteSelection ? null : undefined
     // An explicit --host runtime:<id> outranks an ambient pairing code or environment.
     const remotePairingCode =
