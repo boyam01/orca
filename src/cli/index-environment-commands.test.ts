@@ -41,7 +41,7 @@ vi.mock('child_process', async () => {
 })
 
 import { main } from './index'
-import { useWorktreeAwarenessEnvironment } from './index-test-harness'
+import { pairRuntimeEnvironment, useWorktreeAwarenessEnvironment } from './index-test-harness'
 
 describe('orca cli worktree awareness', () => {
   useWorktreeAwarenessEnvironment({
@@ -83,4 +83,38 @@ describe('orca cli worktree awareness', () => {
     expect(logSpy.mock.calls[0]?.[0]).not.toContain('token')
     expect(logSpy.mock.calls[0]?.[0]).not.toContain('publicKeyB64')
   })
+
+  it.each([
+    [['environment', 'list'], 'environment'],
+    [['environment', 'list'], 'pairing-code'],
+    [['host', 'list'], 'environment'],
+    [['host', 'list'], 'pairing-code']
+  ] as const)(
+    '%s rejects --%s instead of answering for the local machine',
+    async (command, flag) => {
+      const priorExitCode = process.exitCode
+      process.exitCode = undefined
+      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+
+      try {
+        if (flag === 'environment') {
+          pairRuntimeEnvironment(listEnvironmentsMock, 'env-homelab', 'homelab')
+        }
+        await main([...command, `--${flag}`, 'homelab', '--json'], '/tmp/repo')
+
+        const response = JSON.parse(String(logSpy.mock.calls.at(-1)?.[0]))
+        expect(response).toMatchObject({
+          ok: false,
+          error: {
+            code: 'invalid_argument'
+          }
+        })
+        expect(response.error.message).toContain(`\`--${flag}\` does not retarget`)
+        expect(process.exitCode).toBe(1)
+        expect(callMock).not.toHaveBeenCalled()
+      } finally {
+        process.exitCode = priorExitCode
+      }
+    }
+  )
 })
